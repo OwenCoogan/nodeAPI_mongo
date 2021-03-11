@@ -11,8 +11,9 @@ Imports
 Defintiion
 */
     class RouterClass{
-        constructor(){
+        constructor({ passport }){
             this.router = express.Router();
+            this.passport = passport;
         }
 
         routes(){
@@ -91,7 +92,7 @@ Defintiion
             })
 
             this.router.post('/login', (req, res) => {
-                Controllers.auth.login(req)
+                Controllers.auth.login(req, res)
                 .then( apiResponse => {
                     console.log(apiResponse)
                     // Render index vue with data
@@ -108,6 +109,10 @@ Defintiion
                         status: 404
                     })
                 })
+            })
+
+            this.router.get('/me', this.passport.authenticate('jwt', { session: false }), (req, res) => {
+                return res.json(req.user._id)
             })
 
             // Define backoffice route to display form to create new post
